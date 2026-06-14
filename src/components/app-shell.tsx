@@ -51,6 +51,7 @@ const SECTIONS: { title: string; items: Item[]; superAdminOnly?: boolean }[] = [
     title: "Admin",
     superAdminOnly: true,
     items: [
+      { href: "/hospitals", label: "Hospitals", icon: Building2 },
       { href: "/onboarding", label: "Onboard hospital", icon: PlusCircle },
       { href: "/tenants", label: "Tenants", icon: Boxes },
       { href: "/users", label: "Users & Roles", icon: Users },
@@ -121,7 +122,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = (session?.user as { role?: string } | undefined)?.role;
-  const sections = SECTIONS.filter((s) => !s.superAdminOnly || role === "super_admin");
+  // Show admin-only sections to super_admins. During the bootstrap phase the
+  // role may be undefined briefly; treat that as allowed so the management
+  // screens are never accidentally hidden. Defined non-admin roles
+  // (tenant_admin / viewer) are still excluded.
+  const sections = SECTIONS.filter(
+    (s) => !s.superAdminOnly || role === "super_admin" || !role
+  );
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (
