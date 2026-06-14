@@ -87,7 +87,7 @@ function NavContent({
   return (
     <>
       <div className="flex h-14 items-center gap-2 px-5 font-semibold">
-        <span className="grid h-7 w-7 place-items-center rounded-md bg-brand-600 text-white">A</span>
+        <img src="/logo.svg" alt="Arteq" className="h-8 w-8 object-contain" />
         Arteq Admin
       </div>
       <nav className="space-y-5 px-3 py-4">
