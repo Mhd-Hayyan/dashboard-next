@@ -62,6 +62,7 @@ type State = {
 };
 
 type Store = State & {
+  hydrated: boolean;
   addPatient: (name: string, phone: string) => Patient;
   previewPatientId: () => string;
   addBooking: (input: {
@@ -216,6 +217,7 @@ export function useMockStore(): Store {
 
 export function MockStoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = React.useState<State>(SEED);
+  const [hydrated, setHydrated] = React.useState(false);
 
   // Hydrate from localStorage so Doctor + Admin dashboards share data and
   // a reload keeps the demo state.
@@ -233,6 +235,7 @@ export function MockStoreProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* ignore corrupt storage */
     }
+    setHydrated(true);
   }, []);
 
   // Persist + keep tabs in sync.
@@ -458,6 +461,7 @@ export function MockStoreProvider({ children }: { children: React.ReactNode }) {
 
   const value: Store = {
     ...state,
+    hydrated,
     addPatient,
     previewPatientId,
     addBooking,

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Stethoscope, Building2, Home, RotateCcw, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogo, AppLoader } from "@/components/brand";
+import { Reveal } from "@/components/reveal";
 import { MockStoreProvider, useMockStore } from "./_store";
 
 const TABS = [
@@ -19,6 +21,7 @@ function MockHeader() {
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-1 px-4">
         <span className="mr-3 inline-flex items-center gap-2 font-semibold text-gray-900">
+          <BrandLogo className="h-7 w-7" />
           <span className="rounded-md bg-brand-600 px-1.5 py-0.5 text-xs text-white">MOCK</span>
           Arteq Care
         </span>
@@ -66,13 +69,23 @@ function MockHeader() {
   );
 }
 
+function MockBody({ children }: { children: React.ReactNode }) {
+  const { hydrated } = useMockStore();
+  if (!hydrated) return <AppLoader label="Loading dashboard" />;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <MockHeader />
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        <Reveal>{children}</Reveal>
+      </main>
+    </div>
+  );
+}
+
 export default function MockLayout({ children }: { children: React.ReactNode }) {
   return (
     <MockStoreProvider>
-      <div className="min-h-screen bg-gray-50">
-        <MockHeader />
-        <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-      </div>
+      <MockBody>{children}</MockBody>
     </MockStoreProvider>
   );
 }
