@@ -147,6 +147,7 @@ export interface CallLog {
   transcript?: TranscriptTurn[] | string | null;
   intents?: string[] | string | null;
   outcome?: string | null;
+  recording_url?: string | null; // audio recording of the call (when stored by backend)
   created_at?: string;
 }
 
@@ -242,4 +243,50 @@ export interface HisConfig {
   base_url?: string;
   auth?: { type: string; header?: string; value?: string };
   endpoints?: Record<string, string>;
+}
+
+// ── Patient-intake workflow (ported from the mock; backend endpoints planned,
+//    see backend-patches/BACKEND_SPEC_patient_intake.md) ────────────────────
+export interface Patient {
+  id: string;
+  hospital_id?: string | null;
+  name: string;
+  phone: string;
+  created_at?: string;
+}
+
+export type PaymentMode = "pay_now" | "pay_later";
+
+export type BookingStatus =
+  | "pending_payment" // pay-now: QR generated, awaiting scan + pay
+  | "awaiting_confirmation" // pay-later: token issued but inactive
+  | "confirmed" // paid (pay-now) or token activated (pay-later)
+  | "cancelled";
+
+export interface BookingToken {
+  code: string;
+  active: boolean;
+}
+
+export interface Booking {
+  id: string;
+  hospital_id?: string | null;
+  patient_id: string;
+  patient_name: string;
+  patient_phone: string;
+  slot: string; // ISO datetime
+  payment_mode: PaymentMode;
+  status: BookingStatus;
+  amount_paise: number;
+  token?: BookingToken | null;
+  created_at?: string;
+}
+
+export interface WhatsAppMessage {
+  id: string;
+  hospital_id?: string | null;
+  phone: string;
+  patient_name?: string | null;
+  body: string;
+  at: string; // ISO datetime
 }
