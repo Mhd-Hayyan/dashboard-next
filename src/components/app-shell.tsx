@@ -122,13 +122,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = (session?.user as { role?: string } | undefined)?.role;
-  // Show admin-only sections to super_admins. During the bootstrap phase the
-  // role may be undefined briefly; treat that as allowed so the management
-  // screens are never accidentally hidden. Defined non-admin roles
-  // (tenant_admin / viewer) are still excluded.
-  const sections = SECTIONS.filter(
-    (s) => !s.superAdminOnly || role === "super_admin" || !role
-  );
+  // Admin-only sections (Hospitals, Onboard, Tenants, Users) are visible only to
+  // super_admins. The (app) layout already waits for an authenticated session
+  // before rendering, so `role` is resolved by the time this runs.
+  const sections = SECTIONS.filter((s) => !s.superAdminOnly || role === "super_admin");
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   return (

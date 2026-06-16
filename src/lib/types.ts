@@ -12,7 +12,7 @@ export interface Hospital {
   phone?: string | null;
   hours?: Record<string, [string, string]> | null;
   slug?: string | null;
-  plivo_number?: string | null;
+  plivo_number?: string | null; // carrier DID (Exotel); JSON key kept for backend compat
   knowledge_base?: string | null;
   tier?: Tier;
   agent_name?: string | null;
@@ -200,7 +200,7 @@ export interface User {
   email: string;
   role: Role;
   active: boolean;
-  tenants?: string[]; // slugs the user is scoped to
+  tenant_slugs?: string[]; // hospital slugs this user can access (tenant_admin / viewer)
   created_at?: string;
 }
 
@@ -222,6 +222,10 @@ export interface Tenant {
 
 export interface TelephonyStatus {
   overall: { sip_calls_ready: boolean };
+  // Carrier blocks. Exotel is the active carrier; `plivo` is the legacy block
+  // the backend still returns until its /telephony/status is renamed. The
+  // Telephony page renders whichever carrier block(s) the backend sends.
+  exotel?: Record<string, boolean>;
   plivo?: Record<string, boolean>;
   livekit?: Record<string, boolean>;
   missing: string[];
