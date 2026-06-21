@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Phone, MessageSquareText, BarChart3, CalendarCheck, PhoneCall,
   Radio, Settings, Building2, Stethoscope, HelpCircle, Receipt, Siren, BookOpen,
   Network, Users, Boxes, LogOut, PlusCircle, Menu, X,
-  UserPlus, Ticket, MessageCircle,
+  UserPlus, Ticket, MessageCircle, UploadCloud, PhoneOutgoing,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useCurrentHospital } from "./providers";
@@ -28,6 +28,13 @@ const SECTIONS: { title: string; items: Item[]; superAdminOnly?: boolean }[] = [
       { href: "/live", label: "Live", icon: Radio },
       { href: "/appointments", label: "Appointments", icon: CalendarCheck },
       { href: "/callbacks", label: "Callbacks", icon: PhoneCall },
+    ],
+  },
+  {
+    title: "Outbound",
+    items: [
+      { href: "/reminders", label: "Reminders", icon: PhoneOutgoing },
+      { href: "/import", label: "Import Appointments", icon: UploadCloud },
     ],
   },
   {

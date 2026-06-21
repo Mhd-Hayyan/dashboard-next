@@ -346,3 +346,29 @@ export interface TrialStatus {
   activated_at?: string | null;
   days_remaining?: number | null;
 }
+
+// ── Outbound reminder tier (trial product) ─────────────────────────────────
+export interface ReminderSettings {
+  remind_24h_enabled: boolean;
+  remind_2h_enabled: boolean;
+  call_on_doctor_unavailable_enabled: boolean;
+}
+
+export type OutboundCallType = "reminder_24h" | "reminder_2h" | "doctor_unavailable";
+export type OutboundStatus = "queued" | "placed" | "answered" | "missed" | "cancelled";
+
+export interface OutboundQueueItem {
+  id: string;
+  appointment_id?: string | null;
+  patient_name?: string | null;
+  phone?: string | null;
+  call_type: OutboundCallType;
+  scheduled_for?: string | null;
+  status: OutboundStatus;
+  attempts?: number | null;
+}
+
+export interface ImportResult {
+  imported: number;
+  skipped: { row: number; reason: string }[];
+}

@@ -12,6 +12,7 @@ import type {
   CallFeedback, MissedQuestion, User,
   Patient, Booking, BookingStatus, PaymentMode, WhatsAppMessage,
   TrialStatus, DoctorAvailability, DoctorAvailabilityInfo, AppointmentEvent,
+  ReminderSettings, OutboundQueueItem, ImportResult,
 } from "./types";
 
 import { getSession } from "next-auth/react";
@@ -160,6 +161,35 @@ export const api = {
   // ── Appointment audit trail (migrations 019) ──────────
   listAppointmentEvents: (hid: string, apptId: string) =>
     get<AppointmentEvent[]>(`/hospitals/${hid}/appointments/${apptId}/events`),
+
+  // ── Outbound reminder tier (trial product) ────────────
+  // File upload is multipart, so it bypasses the JSON `request()` helper.
+  importAppointments: async (hid: string, doctorId: string, file: File): Promise<ImportResult> => {
+    const token = await resolveToken();
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("doctor_id", doctorId);
+    const res = await fetch(`${BASE}/hospitals/${hid}/appointments/import`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: fd,
+    });
+    if (res.status === 401) {
+      _cachedToken = null;
+      if (typeof window !== "undefined") window.location.href = "/login";
+      throw new ApiError(401, "Unauthorized");
+    }
+    if (!res.ok) {
+      let detail = res.statusText;
+      try { const b = await res.json(); detail = b?.detail || detail; } catch { /* ignore */ }
+      throw new ApiError(res.status, detail);
+    }
+    return (await res.json()) as ImportResult;
+  },
+  getReminderSettings: (hid: string) => get<ReminderSettings>(`/hospitals/${hid}/reminder-settings`),
+  setReminderSettings: (hid: string, b: ReminderSettings) =>
+    put<ReminderSettings>(`/hospitals/${hid}/reminder-settings`, b),
+  listOutboundQueue: (hid: string) => get<OutboundQueueItem[]>(`/hospitals/${hid}/outbound-queue`),
 
   // ── Knowledge base (stored on hospital) ───────────────
   saveKnowledgeBase: (hid: string, knowledge_base: string) => put<Hospital>(`/hospitals/${hid}`, { knowledge_base }),
